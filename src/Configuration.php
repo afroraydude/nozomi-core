@@ -4,13 +4,13 @@ namespace Nozomi\Core;
 class Configuration {
 
   function GetConfig() {
-    $configLocation = __DIR__ . '/../../site/config.ini';
+    $configLocation = __DIR__ . '/../../../../site/config.ini';
     $config = parse_ini_file($configLocation, true);
     return $config;
   }
 
   function ConfigExists() {
-    $configLocation = __DIR__ . '/../../site/config.ini';
+    $configLocation = __DIR__ . '/../../../../site/config.ini';
     $config = parse_ini_file($configLocation, true);
     if ($config) return true;
     else return false;
@@ -49,7 +49,7 @@ class Configuration {
 
     $index = "INSERT INTO `nozomi`.`pages` (`name`, `title`, `author`, `content`) VALUES ('index', 'Home', 'nozomi', '<h1>Welcome to Nozomi!</h1>');";
 
-    $configLocation = __DIR__ . '/../../site/config.ini';
+    $configLocation = __DIR__ . '/../../../../site/config.ini';
 
     $bf = new BaseFunc();
 

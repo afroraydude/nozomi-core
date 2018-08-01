@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css?family=Istok+Web');
+
+html, body {
+    min-height: 100%;
+    height: 100%;
+    font-family: 'Istok Web',
+    sans-serif;
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+}
+.form-signin .checkbox {
+    font-weight: 400;
+}
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin .first {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin .last {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.page {
+    min-height: 100%;
+    /* equal to footer height */
+    margin-bottom: -60px;
+}
+
+.page:after {
+    content: "";
+    display: block;
+}
+
+.site-footer, .page:after {
+    height: 60px;
+    position: relative;
+}
+
+.footer-internal {
+    background-color: inherit !important;
+    width: 100%;
+    height: 60px;
+    display: block;
+    margin: 0 auto;
+    line-height: 60px;
+}
+
+.footer-internal p {
+    margin-bottom: 0px;
+}
+
+.ql-showHtml:after {
+    font-size: 14px;
+    content: "[source]";
+}

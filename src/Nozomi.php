@@ -24,7 +24,7 @@ class Nozomi
 
     $app->get('/nozomi/assets/{name:.*}', function (Request $request, Response $response, array $args) {
       $path = $args['name'];
-      $containingFolder = __DIR__ . '/../nozomi/data/';
+      $containingFolder = __DIR__;
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
       print($file);
@@ -37,7 +37,7 @@ class Nozomi
       $path = $args['name'];
       $conf = new Configuration();
       $config = $conf->GetConfig();
-      $containingFolder = __DIR__ . '/../site/themes/' . $config['theme'] . '/';
+      $containingFolder = __DIR__ . '/../../../../site/themes/' . $config['theme'] . '/';
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
       print($file);
@@ -132,8 +132,8 @@ class Nozomi
         $config = $conf->GetConfig();
         $templateDir = 'themes/' . $config['theme'];
         $templates = Array();
-        foreach (array_filter(glob(__DIR__ . '/../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
-          $file = str_replace(__DIR__ . '/../site/' . $templateDir . '/', "", $file);
+        foreach (array_filter(glob(__DIR__ . '/../../../../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
+          $file = str_replace(__DIR__ . '/../../../../site/' . $templateDir . '/', "", $file);
           array_push($templates, $file);
         }
         $data['templates'] = $templates;
