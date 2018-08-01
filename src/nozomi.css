@@ -1,10 +1,12 @@
-@import url('https://fonts.googleapis.com/css?family=Istok+Web');
+@font-face {
+    font-family: "Now";
+    src: url('/nozomi/assets/fonts/now.medium.ttf');
+}
 
 html, body {
     min-height: 100%;
     height: 100%;
-    font-family: 'Istok Web',
-    sans-serif;
+    font-family: 'Now'
 }
 
 .form-signin {

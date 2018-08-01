@@ -5,6 +5,7 @@ namespace Nozomi\Core;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use \Firebase\JWT\JWT;
+use voku\helper\AntiXSS;
 
 class Nozomi
 {
@@ -27,23 +28,12 @@ class Nozomi
       $containingFolder = __DIR__ . '/';
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
-      print($file);
       $finfo = new \Finfo(FILEINFO_MIME_TYPE);
       $response->write($file);
-      return $response->withHeader('Content-Type', $finfo->buffer($file));
-    });
-
-    $app->get('/site/assets/{name:.*}', function (Request $request, Response $response, array $args) {
-      $path = $args['name'];
-      $conf = new Configuration();
-      $config = $conf->GetConfig();
-      $containingFolder = __DIR__ . '/../../../../site/themes/' . $config['theme'] . '/';
-      $filepath = $containingFolder . $path;
-      $file = @file_get_contents($filepath);
-      print($file);
-      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
-      $response->write($file);
-      return $response->withHeader('Content-Type', $finfo->buffer($file));
+      $ext = array_pop(explode('.', $filepath));
+      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
+      //if ($ext === 'svg') return $response;
+      else return $response->withHeader('Content-Type', $finfo->buffer($file));
     });
 
     $app->get('/nozomi/setup', function (Request $request, Response $response, array $args) {
@@ -93,7 +83,11 @@ class Nozomi
     });
 
     $app->get('/nozomi', function (Request $request, Response $response, array $args) {
-      $this->nozomiRenderer->render($response, 'home.html');
+      $content = new Content();
+      $data = Array (
+        'pages' => $content->GetPages()
+      );
+      $this->nozomiRenderer->render($response, 'home.html', $data);
     })->add(new AuthorizationMiddleware(3));
 
     $app->get('/nozomi/page/new', function (Request $request, Response $response, array $args) {
@@ -103,8 +97,8 @@ class Nozomi
 
 
       $templates = Array();
-      foreach (array_filter(glob(__DIR__ . '/../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
-        $file = str_replace(__DIR__ . '/../site/' . $templateDir . '/', "", $file);
+      foreach (array_filter(glob(__DIR__ . '/../../../../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
+        $file = str_replace(__DIR__ . '/../../../../site/' . $templateDir . '/', "", $file);
         array_push($templates, $file);
       }
 
@@ -113,14 +107,24 @@ class Nozomi
     })->add(new AuthorizationMiddleware(2));
 
     $app->post('/nozomi/page/post', function (Request $request, Response $response, array $args) {
+      $content = new Content();
       $data = $request->getParsedBody();
-      return $response->withJson($data);
+      $content->PostPage($data);
     })->add(new AuthorizationMiddleware(2));
 
     $app->get('/nozomi/logout', function (Request $request, Response $response, array $args) {
       $_SESSION['token'] = '';
       return $response->withRedirect('/nozomi/login');
     })->add(new AuthorizationMiddleware(3));
+
+
+    $app->get('/nozomi/page/getcontent/{name:.*}', function (Request $request, Response $response, array $args) {
+      $content = new Content();
+      $data = $content->GetPage($args['name']);
+      $antiXss = new AntiXSS();
+      $data['content'] = $antiXss->xss_clean($data['content']);
+      return $response->withJSON($data);
+    })->add(new AuthorizationMiddleware(3))->setName('getcontent');
 
     $app->get('/nozomi/page/edit/{name:.*}', function (Request $request, Response $response, array $args) {
       $content = new Content();
@@ -141,6 +145,34 @@ class Nozomi
       } else {
         return $this->nozomiRenderer->render($response, '404.html');
       }
-    })->add(new AuthorizationMiddleware(3));
+    })->add(new AuthorizationMiddleware(3))->setName('editpage');
+
+    $app->any('/index', function (Request $request, Response $response, array $args) {
+      return $response->withRedirect('/');
+    });
+
+    $app->get('/site/assets/{name:.*}', function (Request $request, Response $response, array $args) {
+      $path = $args['name'];
+      $conf = new Configuration();
+      $config = $conf->GetConfig();
+      $containingFolder = __DIR__ . '/../../../../site/themes/' . $config['theme'] . '/';
+      $filepath = $containingFolder . $path;
+      $file = @file_get_contents($filepath);
+      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
+      $response->write($file);
+      $ext = array_pop(explode('.', $filepath));
+      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
+      //if ($ext === 'svg') return $response;
+      else return $response->withHeader('Content-Type', $finfo->buffer($file));
+    });
+
+    $app->get('/[{name:.*}]', function (Request $request, Response $response, array $args) {
+      $conf = new Configuration();
+      if ($args) $name = $args['name'];
+      else $name = 'index';
+      $content = new Content();
+      if ($conf->ConfigExists() == false) return $this->nozomiRenderer->render($response, 'installconfirm.html');
+      else return $content->RenderPage($response, $this, $name);
+    });
   }
 }
