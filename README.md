@@ -10,7 +10,7 @@ It is built on top the original Slim Framework.
 ### Via Composer
 Include `nozomi-core` repository into Composer:
 
-```
+```json
     "repositories": [{
         "type": "vcs",
         "url": "https://github.com/afroraydude/nozomi-core"
@@ -42,6 +42,6 @@ composer install
 
 ## Usage
 Adding Nozomi to your Slim application is very simple. In your public `index.php` file after you define your app, dependencies, and settings:
-```
+```php
 $nozomi = new \Nozomi\Core\Nozomi($app);
 ```
