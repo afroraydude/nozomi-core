@@ -1,0 +1,17 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+
+font name: Now-Medium
+font link: https://hanken.co/product/now/
+font author: Hanken Design Co.
+font author site: https://hanken.co/
+
+icon designer: Justin Church
+icon designer link: /Justinchurch
+        
+
+fontColor: {"gradient-0":"#FF0000","gradient-1":"#F6EB37"}
+bgColor: {"hex":"#FFFFFF"}
+iconColor: {"gradient-0":"#FF0000","gradient-1":"#F6EB37"}
+      
