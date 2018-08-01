@@ -1,5 +1,6 @@
 <?php
 namespace Nozomi\Core;
+use \Slim\PDO\Database;
 
 class Content {
   function RenderPage($rs, $app, $page) {
@@ -10,9 +11,9 @@ class Content {
     $d = $config['sqldb'];
     $u = $config['sqluser'];
     $p = $config['sqlpass'];
-    $conn = new PDO("mysql:host=$s;dbname=$d", $u, $p);
+    $conn = new Database("mysql:host=$s;dbname=$d", $u, $p);
     // set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
 
     $stmt = $conn->prepare("SELECT `template`,`content`,`title` FROM pages WHERE `name` = ? LIMIT 1");
     $stmt->execute([$page]);
@@ -37,9 +38,9 @@ class Content {
     $d = $config['sqldb'];
     $u = $config['sqluser'];
     $p = $config['sqlpass'];
-    $conn = new PDO("mysql:host=$s;dbname=$d", $u, $p);
+    $conn = new \Slim\PDO\Database("mysql:host=$s;dbname=$d", $u, $p);
     // set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
 
     $stmt = $conn->prepare("SELECT * FROM pages WHERE `name` = ? LIMIT 1");
     $stmt->execute([$page]);
