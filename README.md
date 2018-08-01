@@ -10,7 +10,7 @@ It is built on top the original Slim Framework.
 ### Via Composer
 Include `nozomi-core` repository into Composer:
 
-```json
+```
     "repositories": [{
         "type": "vcs",
         "url": "https://github.com/afroraydude/nozomi-core"
@@ -22,19 +22,19 @@ Include `nozomi-core` repository into Composer:
 ```
 
 Then run: 
-```sh
+```
 composer update
 ```
 
 ### Via `nozomi`
 
 Clone the `nozomi` repository:
-```sh
+```
 git clone https://github.com/afroraydude/nozomi.git
 ```
 
 Enter the directory and install requirements:
-```sh
+```
 cd nozomi
 
 composer install
