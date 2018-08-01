@@ -39,3 +39,9 @@ cd nozomi
 
 composer install
 ```
+
+## Usage
+Adding Nozomi to your Slim application is very simple. In your public `index.php` file after you define your app, dependencies, and settings:
+```
+$nozomi = new \Nozomi\Core\Nozomi($app);
+```
