@@ -1,0 +1,58 @@
+<html>
+<head>
+{% include 'header.html' %}
+</head>
+<div class="page">
+<div style="height: 150px">
+  <img src="/nozomi/assets/img/icon-left-font.svg" style="display: block; height: inherit; margin: 0 auto; padding-top: 50px; margin-bottom: 50px;"/>
+</div>
+<h1 class="text-center" style="margin-bottom: 50px;">Setup</h1>
+<div class="container">
+<form method="POST" action="/nozomi/setup">
+  <div class="form-group row">
+    <label for="sqlh" class="col-3 col-form-label">SQL Host</label> 
+    <div class="col-9">
+      <input id="sqlh" name="sqlh" type="text" class="form-control here" required="required">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="sqlu" class="col-3 col-form-label">SQL Username</label> 
+    <div class="col-9">
+      <input id="sqlu" name="sqlu" type="text" class="form-control here" required="required">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="sqlp" class="col-3 col-form-label">SQL Password</label> 
+    <div class="col-9">
+      <input id="sqlp" name="sqlp" type="text" class="form-control here" required="required">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="sqld" class="col-3 col-form-label">SQL Database</label> 
+    <div class="col-9">
+      <input id="sqld" name="sqld" type="text" class="form-control here" required="required">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="user" class="col-3 col-form-label">Nozomi Admin Username</label> 
+    <div class="col-9">
+      <input id="user" name="user" type="text" class="form-control here" required="required">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="pass" class="col-3 col-form-label">Nozomi Admin Password</label> 
+    <div class="col-9">
+      <input id="pass" name="pass" type="text" class="form-control here" required="required">
+    </div>
+  </div> 
+  <div class="form-group row">
+    <div class="offset-3 col-9">
+      <button name="submit" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+{% include 'footer.html' %}
+</body>
+</html>

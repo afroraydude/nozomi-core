@@ -1,0 +1,107 @@
+<html>
+<head>
+    {% include 'header.html' %}
+    <!-- Main Quill library -->
+    <script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <!-- Theme included stylesheets -->
+    <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+    <link href="//cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
+    <link rel="stylesheet" href="/nozomi/assets/js/ui/trumbowyg.min.css">
+</head>
+<body>
+
+<div class="page">
+    {% include 'nav.html' %}
+    <div class="container" id="msg" style="font-size:largest;">
+        <!-- you can set whatever style you want on this -->
+        Loading, please wait...
+    </div>
+    <div id="editor-container"  style="display:none;" class="container">
+        {% if content %}
+        <h1>Edit Page</h1>
+        {% else %}
+        <h1>Create Page</h1>
+        {% endif %}
+        <div class="form-group">
+        <input required class="form-control" id="title" value="{{ title }}" placeholder="Page Title"/>
+        </div>
+        <div class="form-group">
+        <input required class="form-control" id="url" value="{{ name }}" placeholder="Page URL"/>
+        </div>
+        <div class="form-group">
+            <script src="/nozomi/assets/js/trumbowyg.min.js"></script>
+            <div id="wysiwyg"></div>
+            <script>
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "{{ path_for('getcontent', {'name': name}) }}",
+                    "method": "GET",
+                    "headers": {
+                        "content-type": "application/x-www-form-urlencoded",
+                        "cache-control": "no-cache",
+                        "postman-token": "53f41ebf-078d-4794-e411-e715a8e69225"
+                    }
+                }
+
+                $('#wysiwyg').trumbowyg({semantic: false});
+                $.ajax(settings).done(function (response) {
+                    if(response.content) {
+                        $('#wysiwyg').trumbowyg('html', response.content);
+                    }
+                });
+            </script>
+        </div>
+        <div class="form-group">
+            <p>Page template:</p>
+            <select id="template">
+                {% for template in templates %}
+                <option>{{ template }}</option>
+                {% else %}
+                <option>None</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" id="submit">Submit Page</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#editor-container').show();
+        $('#msg').hide();
+        $("#submit").click(function(){
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "http://localhost/nozomi/page/post",
+                "method": "POST",
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                    "cache-control": "no-cache",
+                    "postman-token": "53f41ebf-078d-4794-e411-e715a8e69225"
+                },
+                "data": {
+                    "title": $('#title').val(),
+                    "url": $('#url').val(),
+                    {% if name %}
+                    "original": "{{ name }}",
+                    {% endif %}
+                    "content": document.querySelector(".ql-editor").innerHTML,
+                    "template": $('#template').val()
+                }
+            }
+
+            $.ajax(settings).done(function (response) {
+                window.location.reload();
+            });
+        });
+    });
+</script>
+</div>
+</body>
+</html>

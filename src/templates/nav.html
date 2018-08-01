@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand-md navbar-light bg-light mb-4">
+  <div class="container">
+  <a class="navbar-brand" href="#"><img src="/nozomi/assets/img/icon-left-font.png" style="height: 30px;"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {{ base_url() == '/nozomi' ? 'active' }}">
+        <a class="nav-link" href="/nozomi">Home</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item {{ base_url() == '/nozomi/logout' ? 'active' }}">
+        <a class="nav-link" href="/nozomi/logout">Logout</a>
+      </li>
+    </ul>
+  </div>
+  </div>
+</nav>
