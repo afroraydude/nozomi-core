@@ -24,7 +24,7 @@ class Nozomi
 
     $app->get('/nozomi/assets/{name:.*}', function (Request $request, Response $response, array $args) {
       $path = $args['name'];
-      $containingFolder = __DIR__;
+      $containingFolder = __DIR__ . '/';
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
       print($file);
