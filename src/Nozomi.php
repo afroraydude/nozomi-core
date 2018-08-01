@@ -16,136 +16,135 @@ class Nozomi
     $this->app = $slimApp;
     $this->registerRoutes($this->app);
   }
-//https://stackoverflow.com/questions/39559180/serving-dynamic-assets-with-slim-and-twig
-//https://www.slimframework.com/docs/v3/objects/router.html#how-to-create-routes
 
   private function registerRoutes($app)
   {
     $container = $app->getContainer();
+    $app->group('/nozomi', function() {
+      $this->get('/assets/{name:.*}', function (Request $request, Response $response, array $args) {
+        $path = $args['name'];
+        $containingFolder = __DIR__ . '/';
+        $filepath = $containingFolder . $path;
+        $file = @file_get_contents($filepath);
+        $finfo = new \Finfo(FILEINFO_MIME_TYPE);
+        $response->write($file);
+        $ext = array_pop(explode('.', $filepath));
+        if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
+        //if ($ext === 'svg') return $response;
+        else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      });
 
-    $app->get('/nozomi/assets/{name:.*}', function (Request $request, Response $response, array $args) {
-      $path = $args['name'];
-      $containingFolder = __DIR__ . '/';
-      $filepath = $containingFolder . $path;
-      $file = @file_get_contents($filepath);
-      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
-      $response->write($file);
-      $ext = array_pop(explode('.', $filepath));
-      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
-      //if ($ext === 'svg') return $response;
-      else return $response->withHeader('Content-Type', $finfo->buffer($file));
-    });
+      $this->get('/setup', function (Request $request, Response $response, array $args) {
+        $conf = new Configuration();
+        if ($conf->ConfigExists() == false) return $this->nozomiRenderer->render($response, 'setup.html');
+        else return $response->withRedirect('/nozomi');
+      });
 
-    $app->get('/nozomi/setup', function (Request $request, Response $response, array $args) {
-      $conf = new Configuration();
-      if ($conf->ConfigExists() == false) return $this->nozomiRenderer->render($response, 'setup.html');
-      else return $response->withRedirect('/');
-    });
-
-    $app->post('/nozomi/setup', function (Request $request, Response $response, array $args) {
-      $conf = new Configuration();
-      if ($conf->ConfigExists() == false) {
-        $data = $request->getParsedBody();
-        if ($conf->CreateConfiguration($data)) {
-          return $response->withRedirect('/');
+      $this->post('/setup', function (Request $request, Response $response, array $args) {
+        $conf = new Configuration();
+        if ($conf->ConfigExists() == false) {
+          $data = $request->getParsedBody();
+          if ($conf->CreateConfiguration($data)) {
+            return $response->withRedirect('/');
+          } else {
+            $this->nozomiRenderer->render($response, 'setup.html');
+          }
         } else {
-          $this->nozomiRenderer->render($response, 'setup.html');
+          return $response->withRedirect('/nozomi');
         }
-      } else {
-        return $response->withRedirect('/');
-      }
-    });
+      });
 
-    $app->get('/nozomi/login', function (Request $request, Response $response, array $args) {
-      $this->nozomiRenderer->render($response, 'login.html');
-    });
+      $this->get('/login', function (Request $request, Response $response, array $args) {
+        $this->nozomiRenderer->render($response, 'login.html');
+      });
 
-    $app->post('/nozomi/login', function (Request $request, Response $response, array $args) {
-      $conf = new Configuration();
-      $config = $conf->GetConfig();
+      $this->post('/login', function (Request $request, Response $response, array $args) {
+        $conf = new Configuration();
+        $config = $conf->GetConfig();
 
-      $data = $request->getParsedBody();
-      $user = $data['username'];
-      $pass = $data['password'];
+        $data = $request->getParsedBody();
+        $user = $data['username'];
+        $pass = $data['password'];
 
-      $auth = new Authorization();
-      if ($auth->verify_password($user, $pass)) {
-        $key = $config['key'];
-        $token = array(
-          'user' => $user
+        $auth = new Authorization();
+        if ($auth->verify_password($user, $pass)) {
+          $key = $config['key'];
+          $token = array(
+            'user' => $user
+          );
+          $jwt = JWT::encode($token, $key);
+          $_SESSION['token'] = $jwt;
+          return $response->withRedirect('/nozomi');
+        } else {
+          return $response->withRedirect('/nozomi/login');
+        }
+      });
+
+      $this->get('', function (Request $request, Response $response, array $args) {
+        $content = new Content();
+        $data = Array (
+          'pages' => $content->GetPages()
         );
-        $jwt = JWT::encode($token, $key);
-        $_SESSION['token'] = $jwt;
-        return $response->withRedirect('/nozomi');
-      } else {
-        return $response->withRedirect('/nozomi/login');
-      }
-    });
+        $this->nozomiRenderer->render($response, 'home.html', $data);
+      })->add(new AuthorizationMiddleware(3));
 
-    $app->get('/nozomi', function (Request $request, Response $response, array $args) {
-      $content = new Content();
-      $data = Array (
-        'pages' => $content->GetPages()
-      );
-      $this->nozomiRenderer->render($response, 'home.html', $data);
-    })->add(new AuthorizationMiddleware(3));
-
-    $app->get('/nozomi/page/new', function (Request $request, Response $response, array $args) {
-      $conf = new Configuration();
-      $config = $conf->GetConfig();
-      $templateDir = 'themes/' . $config['theme'];
-
-
-      $templates = Array();
-      foreach (array_filter(glob(__DIR__ . '/../../../../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
-        $file = str_replace(__DIR__ . '/../../../../site/' . $templateDir . '/', "", $file);
-        array_push($templates, $file);
-      }
-
-      $x = Array('templates' => $templates);
-      $this->nozomiRenderer->render($response, 'page.html', $x);
-    })->add(new AuthorizationMiddleware(2));
-
-    $app->post('/nozomi/page/post', function (Request $request, Response $response, array $args) {
-      $content = new Content();
-      $data = $request->getParsedBody();
-      $content->PostPage($data);
-    })->add(new AuthorizationMiddleware(2));
-
-    $app->get('/nozomi/logout', function (Request $request, Response $response, array $args) {
-      $_SESSION['token'] = '';
-      return $response->withRedirect('/nozomi/login');
-    })->add(new AuthorizationMiddleware(3));
-
-
-    $app->get('/nozomi/page/getcontent/{name:.*}', function (Request $request, Response $response, array $args) {
-      $content = new Content();
-      $data = $content->GetPage($args['name']);
-      $antiXss = new AntiXSS();
-      $data['content'] = $antiXss->xss_clean($data['content']);
-      return $response->withJSON($data);
-    })->add(new AuthorizationMiddleware(3))->setName('getcontent');
-
-    $app->get('/nozomi/page/edit/{name:.*}', function (Request $request, Response $response, array $args) {
-      $content = new Content();
-      $data = $content->GetPage($args['name']);
-
-      if ($data) {
-
+      $this->get('/page/new', function (Request $request, Response $response, array $args) {
         $conf = new Configuration();
         $config = $conf->GetConfig();
         $templateDir = 'themes/' . $config['theme'];
+
+
         $templates = Array();
         foreach (array_filter(glob(__DIR__ . '/../../../../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
           $file = str_replace(__DIR__ . '/../../../../site/' . $templateDir . '/', "", $file);
           array_push($templates, $file);
         }
-        $data['templates'] = $templates;
-        $this->nozomiRenderer->render($response, 'page.html', $data);
-      } else {
-        return $this->nozomiRenderer->render($response, '404.html');
-      }
-    })->add(new AuthorizationMiddleware(3))->setName('editpage');
+
+        $x = Array('templates' => $templates);
+        $this->nozomiRenderer->render($response, 'page.html', $x);
+      })->add(new AuthorizationMiddleware(2));
+
+      $this->post('/page/post', function (Request $request, Response $response, array $args) {
+        $content = new Content();
+        $data = $request->getParsedBody();
+        $content->PostPage($data);
+      })->add(new AuthorizationMiddleware(2));
+
+      $this->get('/logout', function (Request $request, Response $response, array $args) {
+        $_SESSION['token'] = '';
+        return $response->withRedirect('/nozomi/login');
+      })->add(new AuthorizationMiddleware(3));
+
+
+      $this->get('/page/getcontent/{name:.*}', function (Request $request, Response $response, array $args) {
+        $content = new Content();
+        $data = $content->GetPage($args['name']);
+        $antiXss = new AntiXSS();
+        $data['content'] = $antiXss->xss_clean($data['content']);
+        return $response->withJSON($data);
+      })->add(new AuthorizationMiddleware(3))->setName('getcontent');
+
+      $this->get('/page/edit/{name:.*}', function (Request $request, Response $response, array $args) {
+        $content = new Content();
+        $data = $content->GetPage($args['name']);
+
+        if ($data) {
+
+          $conf = new Configuration();
+          $config = $conf->GetConfig();
+          $templateDir = 'themes/' . $config['theme'];
+          $templates = Array();
+          foreach (array_filter(glob(__DIR__ . '/../../../../site/' . $templateDir . '/*.html'), 'is_file') as $file) {
+            $file = str_replace(__DIR__ . '/../../../../site/' . $templateDir . '/', "", $file);
+            array_push($templates, $file);
+          }
+          $data['templates'] = $templates;
+          $this->nozomiRenderer->render($response, 'page.html', $data);
+        } else {
+          return $this->nozomiRenderer->render($response, '404.html');
+        }
+      })->add(new AuthorizationMiddleware(3))->setName('editpage');
+    });
 
     $app->any('/index', function (Request $request, Response $response, array $args) {
       return $response->withRedirect('/');
