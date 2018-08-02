@@ -11,16 +11,21 @@ class Nozomi
 {
   private $app;
 
-  function __construct($slimApp)
+  /**
+   * Nozomi constructor.
+   * @param \Slim\App $slimApp
+   */
+  function __construct(\Slim\App $slimApp, NozomiPluginHandler $pluginHandler = null)
   {
     $this->app = $slimApp;
-    $this->registerRoutes($this->app);
+    if (isset($pluginHandler)) $this->registerRoutes($pluginHandler);
+    else $this->registerRoutes();
   }
 
-  private function registerRoutes($app)
+  private function registerRoutes(NozomiPluginHandler $pluginHandler = null)
   {
-    $container = $app->getContainer();
-    $app->group('/nozomi', function() {
+    $container = $this->app->getContainer();
+    $this->app->group('/nozomi', function() {
       $this->get('/assets/{name:.*}', function (Request $request, Response $response, array $args) {
         $path = $args['name'];
         $containingFolder = __DIR__ . '/';
@@ -146,11 +151,11 @@ class Nozomi
       })->add(new AuthorizationMiddleware(3))->setName('editpage');
     });
 
-    $app->any('/index', function (Request $request, Response $response, array $args) {
-      return $response->withRedirect('/');
+    $this->app->any('/index', function (Request $request, Response $response, array $args) {
+      return $response->withRedirect('/', 301);
     });
 
-    $app->get('/site/assets/{name:.*}', function (Request $request, Response $response, array $args) {
+    $this->app->get('/site/assets/{name:.*}', function (Request $request, Response $response, array $args) {
       $path = $args['name'];
       $conf = new Configuration();
       $config = $conf->GetConfig();
@@ -165,7 +170,14 @@ class Nozomi
       else return $response->withHeader('Content-Type', $finfo->buffer($file));
     });
 
-    $app->get('/[{name:.*}]', function (Request $request, Response $response, array $args) {
+    if (isset($pluginHandler)) {
+      $plugins = $pluginHandler->getPlugins();
+      foreach ($plugins as $plugin) {
+        $plugin->registerRoutes($this->app);
+      }
+    }
+
+    $this->app->get('/[{name:.*}]', function (Request $request, Response $response, array $args) {
       $conf = new Configuration();
       if ($args) $name = $args['name'];
       else $name = 'index';
