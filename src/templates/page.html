@@ -91,7 +91,7 @@
                     {% if name %}
                     "original": "{{ name }}",
                     {% endif %}
-                    "content": document.querySelector(".ql-editor").innerHTML,
+                    "content": $('#wysiwyg').trumbowyg('html');
                     "template": $('#template').val()
                 }
             }
