@@ -1,4 +1,4 @@
-* [Home](README.md)
+* [Home](index.md)
 * [Installation](install.md)
   * [Database setup](install/database.md)
   * [Web Server setup](install/server.md)

@@ -3,6 +3,6 @@
 > A lightweight and simple content management system
 
 [GitHub](https://github.com/afroraydude/nozomi-core)
-[Get Started](README.md)
+[Get Started](index.md)
 
 ![color](#f0f0f0)

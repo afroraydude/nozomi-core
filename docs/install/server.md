@@ -10,7 +10,7 @@ In your virtual host configuration:
 server {
     listen       80;
     server_name  localhost;
-		root   /path/to/webroot;
+		root   /path/to/public;
 		index  index.php;
 		
         #charset koi8-r;
@@ -50,7 +50,7 @@ In your configuration file:
 
 ```virtualhost
 Server {
-    SourceRoot = /path/to/public/directory
+    SourceRoot = /path/to/public
 }
 
 ServerVariables {
