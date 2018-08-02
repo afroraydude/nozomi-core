@@ -18,7 +18,9 @@ class Nozomi
   function __construct(\Slim\App $slimApp, NozomiPluginHandler $pluginHandler = null)
   {
     $this->app = $slimApp;
-    if (isset($pluginHandler)) $this->registerRoutes($pluginHandler);
+    if (isset($pluginHandler)) {
+      $this->registerRoutes($pluginHandler);
+    }
     else $this->registerRoutes();
   }
 
@@ -172,8 +174,9 @@ class Nozomi
 
     if (isset($pluginHandler)) {
       $plugins = $pluginHandler->getPlugins();
+
       foreach ($plugins as $plugin) {
-        $plugin->registerRoutes($this->app);
+        $plugin->registerRoutes();
       }
     }
 

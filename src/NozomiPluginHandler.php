@@ -14,10 +14,10 @@ class NozomiPluginHandler
   private $plugins = Array();
 
   public function registerPlugin( NozomiPlugin $plugin) {\
-    array_push($this::$plugins, $plugin);
+    array_push($this->plugins, $plugin);
   }
 
   public function getPlugins() {
-    return $plugins;
+    return $this->plugins;
   }
 }

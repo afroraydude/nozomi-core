@@ -8,17 +8,16 @@
 
 namespace Nozomi\Core;
 
-
 class NozomiPlugin
 {
-  private $app;
+  protected $app;
+  public $name;
 
-  public function __construct( \Slim\App $app )
+  public function __construct( \Slim\App $app)
   {
     $this->app = $app;
   }
-
-  public function registerRoutes(\Slim\App $app) {
+  public function registerRoutes() {
 
   }
 }
