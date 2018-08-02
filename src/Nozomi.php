@@ -35,7 +35,8 @@ class Nozomi
         $file = @file_get_contents($filepath);
         $finfo = new \Finfo(FILEINFO_MIME_TYPE);
         $response->write($file);
-        $ext = array_pop(explode('.', $filepath));
+        $explosion = explode('.', $filepath);
+        $ext = array_pop($explosion);
         if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
         //if ($ext === 'svg') return $response;
         else return $response->withHeader('Content-Type', $finfo->buffer($file));
@@ -166,7 +167,8 @@ class Nozomi
       $file = @file_get_contents($filepath);
       $finfo = new \Finfo(FILEINFO_MIME_TYPE);
       $response->write($file);
-      $ext = array_pop(explode('.', $filepath));
+      $explosion = explode('.', $filepath);
+      $ext = array_pop($explosion);
       if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
       //if ($ext === 'svg') return $response;
       else return $response->withHeader('Content-Type', $finfo->buffer($file));
