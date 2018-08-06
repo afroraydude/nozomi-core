@@ -1,4 +1,6 @@
 # nozomi-core
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core?ref=badge_shield)
+
 
 
 ## What is `nozomi-core`?
@@ -45,3 +47,7 @@ Adding Nozomi to your Slim application is very simple. In your public `index.php
 ```php
 $nozomi = new \Nozomi\Core\Nozomi($app);
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core?ref=badge_large)
