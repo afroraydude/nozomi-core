@@ -61,6 +61,7 @@ class Authorization {
     $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
 
     $x = $conn->query("SELECT `username`,`role` FROM `users` WHERE `username` = '$user' LIMIT 1")->fetch();
-    return $x['role'];
+    if ($x['role']) return $x['role'];
+    else return null;
   }
 }

@@ -39,6 +39,9 @@ class Content {
     $u = $config['sqluser'];
     $p = $config['sqlpass'];
     $conn = new \Slim\PDO\Database("mysql:host=$s;dbname=$d", $u, $p);
+
+    // TODO: Render upldate timestamp
+
     // set the PDO error mode to exception
     $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
 
@@ -73,7 +76,7 @@ class Content {
     }
   }
 
-  function GetPages() {
+  function getPages() {
     $conf = new Configuration();
     $config = $conf->GetConfig();
     //echo json_encode($config);
@@ -85,5 +88,26 @@ class Content {
     // set the PDO error mode to exception
     $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
     return $conn->query("SELECT `id`,`title`,`name` FROM `pages`")->fetchAll();
+  }
+
+  function postUser($data) {
+    $conf = new Configuration();
+    $config = $conf->GetConfig();
+    //echo json_encode($config);
+    $s = $config['sqlhost'];
+    $d = $config['sqldb'];
+    $u = $config['sqluser'];
+    $p = $config['sqlpass'];
+    $conn = new Database("mysql:host=$s;dbname=$d", $u, $p);
+    // set the PDO error mode to exception
+    $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
+    $auth = new Authorization();
+    $userRole = $auth->get_role($data['username']);
+    $pass = $data['password'];
+
+    $pp = password_hash($pass, PASSWORD_BCRYPT, $options);
+    if ($userRole) {
+      $conn->prepare("INSERT INTO `users` (`username`, `password`, `role`) VALUES (?, ?, 1);")->execute([$data['username'], $pp, $data['role']]);
+    }
   }
 }

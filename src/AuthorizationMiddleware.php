@@ -24,7 +24,7 @@ class AuthorizationMiddleware
       $token = $_SESSION['token'];
       $auth = new Authorization();
       if (!$auth->auth($token, $this->level)) {
-        $response = $response->withRedirect('/nozomi/login');
+        $response = $response->withRedirect($config['nozomiurl'].'/login');
       } else {
         $response = $next($request, $response);
       }

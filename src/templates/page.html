@@ -38,7 +38,7 @@
                 var settings = {
                     "async": true,
                     "crossDomain": true,
-                    "url": "{{ path_for('getcontent', {'name': name}) }}",
+                    "url": "{{ path_for('nozomigetcontent', {'name': name}) }}",
                     "method": "GET",
                     "headers": {
                         "content-type": "application/x-www-form-urlencoded",
@@ -78,7 +78,7 @@
             var settings = {
                 "async": true,
                 "crossDomain": true,
-                "url": "/nozomi/page/post",
+                "url": "{{ path_for('nozomipagepost') }}",
                 "method": "POST",
                 "headers": {
                     "content-type": "application/x-www-form-urlencoded",

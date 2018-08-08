@@ -1,41 +1,55 @@
 <html>
+
 <head>
-{% include 'header.html' %}
+    {% include 'header.html' %}
 </head>
+
 <body>
-<div class="page">
-{% include 'nav.html' %}
-<div class="container">
-    <h1>Dashboard</h1>
-    <br>
-        {% if pages %}
-    <h2>Pages</h2>
-    <br>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th scope="col">Title</th>
-            <th scope="col">URL</th>
-            <th scope="col">Options</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for page in pages %}
-        <tr>
-            <th scope="row">{{ page.title }}</th>
-            <td>{{ page.name }}</td>
-            <td>
-                <a href="{{ path_for('editpage', {'name': page.name}) }}">Edit page</a>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No pages were found on this site.</p>
-    {% endif %}
-</div>
-</div>
-{% include 'footer.html' %}
+    <div class="page">
+        {% include 'nav.html' %}
+        <div class="container">
+            <h1>Dashboard</h1>
+            <div class="row nozomi-gutter">
+                <div class="col-md-3 offset-md-9">
+                    <div class="btn-toolbar text-light" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <a href="/nozomi/page/new" class="btn btn-primary">+ Page</a>
+                            <a href="/nozomi/user/new" class="btn btn-primary">+ User</a>
+                            <a class="btn btn-primary">+ File</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if pages %}
+            <h2>Pages</h2>
+            <div class="row">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">URL</th>
+                            <th scope="col">Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for page in pages %}
+                        <tr>
+                            <th scope="row">{{ page.title }}</th>
+                            <td>{{ page.name }}</td>
+                            <td>
+                                <a href="{{ path_for('editpage', {'name': page.name}) }}">Edit page</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No pages were found on this site.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
 </body>
+
 </html>
