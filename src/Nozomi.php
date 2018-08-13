@@ -29,7 +29,7 @@ class Nozomi
     $container['nozomiRenderer'] = function ($container) {
       $settings = $container->get('settings')['nozomi'];
       $array = Array();
-      $view = new \Slim\Views\Twig($settings['pages_path'], $array);
+      $view = new \Slim\Views\Twig(__DIR__ . '/templates', $array);
 
       // Instantiate and add Slim specific extension
       $url = rtrim(str_ireplace('index.php', '', $container->get('request')->getUri()->getPath()), '/');
@@ -38,10 +38,11 @@ class Nozomi
       return $view;
     };
 
+    // TODO: Fix settings import break
     $container['siteRenderer'] = function ($container) {
       $settings = $container->get('settings')['nozomi'];
-      $view = new \Slim\Views\Twig($settings['site_path'], [
-        'cache' => $settings['cache_path']
+      $view = new \Slim\Views\Twig(__DIR__ . '/../../../../site', [
+        'cache' => false
       ]);
 
       // Instantiate and add Slim specific extension

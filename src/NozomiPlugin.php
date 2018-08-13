@@ -10,7 +10,7 @@ namespace Nozomi\Core;
 
 class NozomiPlugin
 {
-  protected $app;
+  public $app;
   public $name;
 
   public function __construct( \Slim\App $app)
