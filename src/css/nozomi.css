@@ -1,12 +1,22 @@
+
 @font-face {
-    font-family: "Now";
-    src: url('/nozomi/assets/fonts/now.medium.ttf');
+    font-family: "Roboto Light";
+    src: url('/nozomi/assets/fonts/Roboto-Light.ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url('/nozomi/assets/fonts/Roboto-Regular.ttf');
 }
 
 html, body {
     min-height: 100%;
     height: 100%;
-    font-family: 'Now'
+    font-family: 'Roboto Light';
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto';
 }
 
 .form-signin {
@@ -75,4 +85,42 @@ html, body {
 
 .nozomi-gutter {
     margin-bottom: 25px;
+}
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    /*border-right: 1px solid #eee;*/
+}
+
+/* Sidebar navigation */
+.sidebar {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.sidebar .nav {
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-item {
+    width: 100%;
+}
+
+.sidebar .nav-item + .nav-item {
+    margin-left: 0;
+}
+
+.sidebar .nav-link {
+    border-radius: 0;
 }

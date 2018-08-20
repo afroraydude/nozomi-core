@@ -11,13 +11,21 @@ namespace Nozomi\Core;
 
 class NozomiPluginHandler
 {
-  private $plugins = Array();
+  private $plugins = [];
+
+  private $sidebars = [];
 
   public function registerPlugin(NozomiPlugin $plugin) {
+    $sidebar = $plugin->sidebarHTML;
+    array_push($this->sidebars, $sidebar);
     array_push($this->plugins, $plugin);
   }
 
   public function getPlugins() {
     return $this->plugins;
+  }
+
+  public function getSidebars() {
+    return $this->sidebars;
   }
 }

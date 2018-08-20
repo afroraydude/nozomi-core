@@ -10,13 +10,14 @@ namespace Nozomi\Core;
 
 class NozomiPlugin
 {
-  public $app;
-  public $name;
+  protected $app;
+  public $sidebarHTML;
 
   public function __construct( \Slim\App $app)
   {
     $this->app = $app;
   }
+
   public function registerRoutes() {
 
   }

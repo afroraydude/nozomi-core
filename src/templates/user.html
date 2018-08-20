@@ -12,10 +12,13 @@
     <link rel="stylesheet" href="/nozomi/assets/js/ui/trumbowyg.min.css">
 </head>
 <body>
-
 <div class="page">
     {% include 'nav.html' %}
-    <div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            {% include 'sidebar.html' %}
+            <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+                <div class="container">
         {% if username %}
         <h1>Edit User</h1>
         {% else %}
@@ -32,8 +35,10 @@
             <input required class="form-control" type="number" id="role" value="{{ title }}" placeholder="Role Number"/>
         </div>
         <button class="btn btn-primary">Submit</button>
+                </div></main>
     </div>
 </div>
 </div>
+{% include 'footer.html' %}
 </body>
 </html>

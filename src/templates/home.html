@@ -7,22 +7,26 @@
 <body>
     <div class="page">
         {% include 'nav.html' %}
-        <div class="container">
-            <h1>Dashboard</h1>
-            <div class="row nozomi-gutter">
+        <div class="container-fluid">
+            <div class="row">
+                {% include 'sidebar.html' %}
+                <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+                    <div class="container">
+                <h1>Dashboard</h1>
+                <div class="row nozomi-gutter">
                 <div class="col-md-3 offset-md-9">
                     <div class="btn-toolbar text-light" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <a href="/nozomi/page/new" class="btn btn-primary">+ Page</a>
                             <a href="/nozomi/user/new" class="btn btn-primary">+ User</a>
-                            <a class="btn btn-primary">+ File</a>
+                            <a href="/nozomi/filenew" class="btn btn-primary">+ File</a>
                         </div>
                     </div>
                 </div>
             </div>
-            {% if pages %}
-            <h2>Pages</h2>
-            <div class="row">
+                {% if pages %}
+                <h2>Pages</h2>
+                <div class="row">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -46,6 +50,8 @@
                 {% else %}
                 <p>No pages were found on this site.</p>
                 {% endif %}
+            </div></div>
+            </main>
             </div>
         </div>
     </div>

@@ -1,0 +1,14 @@
+<nav class="col-sm-3 col-md-2 d-none d-md-block bg-faded sidebar">
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi' ? 'active' }}" href="/nozomi">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi/file/new' ? 'active' }}" href="/nozomi/file/new">File Uploader</a>
+        </li>
+    </ul>
+
+    {% for sidebar in sidebars %}
+    {{ sidebar|raw }}
+    {% endfor %}
+</nav>

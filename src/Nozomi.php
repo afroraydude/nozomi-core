@@ -12,6 +12,8 @@ class Nozomi
 {
   private $app;
 
+  private $sidebars = [];
+
   /**
    * Nozomi constructor.
    * @param \Slim\App $slimApp
@@ -26,10 +28,22 @@ class Nozomi
   }
 
   private function settings($container) {
+    // DIC
+
+    $container['logger'] = function ($c) {
+      $settings = $c->get('settings')['logger'];
+      $logger = new Monolog\Logger($settings['name']);
+      $logger->pushProcessor(new Monolog\Processor\UidProcessor());
+      $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+      return $logger;
+    };
+
     $container['nozomiRenderer'] = function ($container) {
       $settings = $container->get('settings')['nozomi'];
       $array = Array();
-      $view = new \Slim\Views\Twig(__DIR__ . '/templates', $array);
+      $view = new \Slim\Views\Twig(__DIR__ . '/templates', [
+        // 'cache' => __DIR__ . '/cache'
+      ]);
 
       // Instantiate and add Slim specific extension
       $url = rtrim(str_ireplace('index.php', '', $container->get('request')->getUri()->getPath()), '/');
@@ -53,12 +67,25 @@ class Nozomi
 
     $container['upload_directory'] = function($container) {
       $settings = $container->get('settings')['nozomi'];
-      return $settings['site_files_paths'];
+      return __DIR__ . '/../../../../site/files';
+    };
+
+    $container['errorHandler'] = function ($container) {
+      return function ($request, $response, $exception) use ($container) {
+        $content = new Content();
+        return $content->renderError($response, $exception);
+      };
     };
   }
 
   private function registerRoutes(NozomiPluginHandler $pluginHandler = null)
   {
+    $this->app->add(new NozomiMiddleware());
+
+    if ($pluginHandler) {
+      $this->sidebars = $pluginHandler->getSidebars();
+    }
+
     $container = $this->app->getContainer();
 
     $settings = $container->get('settings');
@@ -69,7 +96,12 @@ class Nozomi
             'cache_path' => false,
             'data_path' => __DIR__ . '../nozomi/data',
             'site_files_paths' => __DIR__ . '/../../../../site/files'
-        ]
+        ],
+      'logger' => [
+        'name' => 'nozomi_site',
+        'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+        'level' => \Monolog\Logger::DEBUG,
+      ]
     ]);
 
     $this->settings($container);
@@ -77,7 +109,9 @@ class Nozomi
     $conf = new Configuration();
     $config = $conf->GetConfig();
 
-    $this->app->group('/nozomi', function() {
+    $nozomi = $this;
+
+    $this->app->group('/nozomi', function() use ($nozomi) {
 
       // TODO: NAME ROUTES AND USE PATH_FOR INSTEAD OF SENDING NOZOMIURL
 
@@ -135,15 +169,16 @@ class Nozomi
         }
       });
 
-      $this->get('', function (Request $request, Response $response, array $args) {
+      $this->get('[/]', function (Request $request, Response $response, array $args) use ($nozomi) {
         $content = new Content();
         $data = Array (
-          'pages' => $content->GetPages()
+          'pages' => $content->GetPages(),
+          'sidebars' => $nozomi->sidebars
         );
         $this->nozomiRenderer->render($response, 'home.html', $data);
-      })->add(new AuthorizationMiddleware(3));
+      })->add(new AuthorizationMiddleware(4));
 
-      $this->get('/page/new', function (Request $request, Response $response, array $args) {
+      $this->get('/page/new', function (Request $request, Response $response, array $args) use ($nozomi) {
         $conf = new Configuration();
         $config = $conf->GetConfig();
         $templateDir = 'themes/' . $config['theme'];
@@ -153,20 +188,23 @@ class Nozomi
           array_push($templates, $file);
         }
 
-        $x = Array('templates' => $templates);
+        $x = Array(
+          'templates' => $templates,
+          'sidebars' => $nozomi->sidebars
+        );
         $this->nozomiRenderer->render($response, 'page.html', $x);
-      })->add(new AuthorizationMiddleware(2));
+      })->add(new AuthorizationMiddleware(3));
 
       $this->post('/page/post', function (Request $request, Response $response, array $args) {
         $content = new Content();
         $data = $request->getParsedBody();
         $content->PostPage($data);
-      })->add(new AuthorizationMiddleware(2))->setName('nozomipagepost');
+      })->add(new AuthorizationMiddleware(3))->setName('nozomipagepost');
 
       $this->get('/logout', function (Request $request, Response $response, array $args) {
         $_SESSION['token'] = '';
         return $response->withRedirect('/');
-      })->add(new AuthorizationMiddleware(3));
+      })->add(new AuthorizationMiddleware(4));
 
 
       $this->get('/page/getcontent/{name:.*}', function (Request $request, Response $response, array $args) {
@@ -175,9 +213,9 @@ class Nozomi
         $antiXss = new AntiXSS();
         $data['content'] = $antiXss->xss_clean($data['content']);
         return $response->withJSON($data);
-      })->add(new AuthorizationMiddleware(3))->setName('nozomigetcontent');
+      })->add(new AuthorizationMiddleware(4))->setName('nozomigetcontent');
 
-      $this->get('/page/edit/{name:.*}', function (Request $request, Response $response, array $args) {
+      $this->get('/page/edit/{name:.*}', function (Request $request, Response $response, array $args) use ($nozomi) {
         $content = new Content();
         $data = $content->GetPage($args['name']);
 
@@ -192,15 +230,20 @@ class Nozomi
             array_push($templates, $file);
           }
           $data['templates'] = $templates;
+          $data['sidebars'] = $nozomi->sidebars;
           $this->nozomiRenderer->render($response, 'page.html', $data);
         } else {
           return $this->nozomiRenderer->render($response, '404.html');
         }
-      })->add(new AuthorizationMiddleware(3))->setName('editpage');
+      })->add(new AuthorizationMiddleware(4))->setName('editpage');
 
-      $this->get('/user/new', function (Request $request, Response $response, array $args) {
-        return $this->nozomiRenderer->render($response, 'user.html');
-      });
+      $this->get('/user/new', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $data = Array (
+          'sidebars' => $nozomi->sidebars
+        );
+        return $this->nozomiRenderer->render($response, 'user.html', $data);
+
+      })->add(new AuthorizationMiddleware(2));
 
       $this->post('/user/post', function (Request $request, Response $response, array $args) {
         $content = new Content();
@@ -208,11 +251,15 @@ class Nozomi
         $content->PostPage($data);
         $config = $conf->GetConfig();
         return $response->withRedirect($config['nozomiurl']);
-      })->add(new AuthorizationMiddleware(1));
-
-      $this->get('/file/new', function (Request $request, Response $response, array $args) {
-        return $this->nozomiRenderer->render($response, 'file.html');
       })->add(new AuthorizationMiddleware(2));
+
+      $this->get('/file/new', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $data = Array (
+          'sidebars' => $nozomi->sidebars
+        );
+
+        return $this->nozomiRenderer->render($response, 'file.html', $data);
+      })->add(new AuthorizationMiddleware(3));
 
       $this->post('/file/post', function (Request $request, Response $response, array $args) {
         $directory = $this->get('upload_directory');
@@ -222,9 +269,16 @@ class Nozomi
         // handle single input with single file upload
         $uploadedFile = $uploadedFiles['example1'];
         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-          $filename = moveUploadedFile($directory, $uploadedFile);
+          $basefunc = new BaseFunc();
+          $filename = $basefunc->moveUploadedFile($directory, $uploadedFile);
           $response->write('uploaded ' . $filename . '<br/>');
         }
+      })->add(new AuthorizationMiddleware(3));
+
+      $this->get('/update', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $exec = exec('cd ..; composer update');
+        return $exec;
+
       })->add(new AuthorizationMiddleware(2));
     });
 
@@ -259,6 +313,21 @@ class Nozomi
       $ext = array_pop($explosion);
       if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
       //if ($ext === 'svg') return $response;
+      else return $response->withHeader('Content-Type', $finfo->buffer($file));
+    });
+
+    $this->app->get('/site/files/{name:.*}', function (Request $request, Response $response, array $args) {
+      $path = $args['name'];
+      $conf = new Configuration();
+      $config = $conf->GetConfig();
+      $containingFolder = __DIR__ . '/../../../../site/files/';
+      $filepath = $containingFolder . $path;
+      $file = @file_get_contents($filepath);
+      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
+      $response->write($file);
+      $explosion = explode('.', $filepath);
+      $ext = array_pop($explosion);
+      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
       else return $response->withHeader('Content-Type', $finfo->buffer($file));
     });
 
