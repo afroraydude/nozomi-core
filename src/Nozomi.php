@@ -7,6 +7,9 @@ use \Slim\Http\Response;
 use \Firebase\JWT\JWT;
 use \voku\helper\AntiXSS;
 use \Dflydev\FigCookies\FigResponseCookies;
+use \Composer\Console\Application;
+use \Composer\Command\UpdateCommand;
+use \Symfony\Component\Console\Input\ArrayInput;
 
 class Nozomi
 {
@@ -276,8 +279,19 @@ class Nozomi
       })->add(new AuthorizationMiddleware(3));
 
       $this->get('/update', function (Request $request, Response $response, array $args) use ($nozomi) {
-        $exec = exec('cd ..; composer update');
-        return $exec;
+        //Use the Composer classes
+
+
+// change out of the webroot so that the vendors file is not created in
+// a place that will be visible to the intahwebz
+        chdir('../');
+
+//Create the commands
+        $input = new ArrayInput(array('command' => 'update'));
+
+//Create the application and run it with the commands
+        $application = new Application();
+        $application->run($input);
 
       })->add(new AuthorizationMiddleware(2));
     });
