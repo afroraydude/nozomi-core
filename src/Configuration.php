@@ -45,7 +45,7 @@ class Configuration {
 
     $admin = "INSERT INTO `users` (`username`, `password`, `role`) VALUES (?, ?, 1);";
 
-    $pages = "CREATE TABLE `pages`( `id` INT(10) NOT NULL AUTO_INCREMENT, `name` VARCHAR(260) NOT NULL DEFAULT '0', `title` VARCHAR(32) NOT NULL DEFAULT '0', `author` VARCHAR(50) NOT NULL DEFAULT '0', `content` TEXT NOT NULL DEFAULT '0', `template` TINYTEXT NOT NULL DEFAULT 'default.html', `last-modified` TIMESTAMP NOT NULL DEFAULT '', PRIMARY KEY (`id`), UNIQUE INDEX `name` (`name`)) COLLATE='utf8_general_ci' ENGINE=InnoDB AUTO_INCREMENT=7;";
+    $pages = "CREATE TABLE `pages`( `id` INT(10) NOT NULL AUTO_INCREMENT, `name` VARCHAR(260) NOT NULL, `title` VARCHAR(32) NOT NULL, `author` VARCHAR(50) NOT NULL, `content` TEXT NOT NULL, `template` TINYTEXT NOT NULL DEFAULT 'default.html', `last-modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE INDEX `name` (`name`)) COLLATE='utf8_general_ci' ENGINE=InnoDB AUTO_INCREMENT=7 ; ";
 
     $files = "CREATE TABLE `files`( `id` INT(10) NOT NULL, `filename` VARCHAR(64) NOT NULL, `location` VARCHAR(260) NOT NULL, `upload-timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`)) COLLATE='utf8_general_ci' ENGINE=InnoDB;";
 
