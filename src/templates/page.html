@@ -1,6 +1,6 @@
 <html>
 <head>
-    {% include 'header.html' %}
+    {% include 'partials/header.twig' %}
     <link rel="stylesheet" href="/nozomi/assets/js/ui/trumbowyg.min.css">
 </head>
 <body>
@@ -8,7 +8,7 @@
     {% include 'nav.html' %}
     <div class="container-fluid">
         <div class="row">
-            {% include 'sidebar.html' %}
+            {% include 'partials/sidebar.twig' %}
             <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
     <div class="container" id="msg" style="font-size:largest;">
         <!-- you can set whatever style you want on this -->
@@ -99,6 +99,6 @@
     });
 </script>
 </div>
-{% include 'footer.html' %}
+{% include 'partials/footer.twig' %}
 </body>
 </html>

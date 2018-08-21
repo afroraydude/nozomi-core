@@ -20,13 +20,22 @@ class Content {
 
     $x = $stmt->fetch();
 
+    $stmt = $conn->prepare("SELECT `template`,`content`,`title` FROM pages WHERE `name` = ? LIMIT 1");
+    $stmt->execute(['404']);
+
+    $notfound = $stmt->fetch();
+
     if($x) {
       $templateDir = 'themes/'.$config['theme'];
       $template = $templateDir.'/'.$x['template'];
 
       return $app->siteRenderer->render($rs, $template, $x);
     } else {
-      return $app->nozomiRenderer->render($rs, '404.html');
+      $templateDir = 'themes/'.$config['theme'];
+      $template = $templateDir.'/'.$notfound['template'];
+
+      if ($notfound) return $app->siteRenderer->render($rs, $template, $notfound);
+      else return $app->nozomiRenderer->render($rs, '404.html');
     }
   }
 

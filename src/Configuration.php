@@ -1,6 +1,8 @@
 <?php
 namespace Nozomi\Core;
 
+use \Slim\Database\Database;
+
 class Configuration {
 
   function GetConfig() {
@@ -78,9 +80,9 @@ class Configuration {
         'key' => $bf->random_str(50)
       );
 
-      $conn = new PDO("mysql:host=$s;dbname=$d", $u, $p);
-      // set the PDO error mode to exception
-      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $conn = new Database("mysql:host=$s;dbname=$d", $u, $p);
+      // set the Database error mode to exception
+      $conn->setAttribute(Database::ATTR_ERRMODE, Database::ERRMODE_EXCEPTION);
 
       $conn->exec($users);
       $conn->prepare($admin)->execute([$uu,$pp]);

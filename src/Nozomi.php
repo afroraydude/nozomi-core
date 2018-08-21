@@ -26,11 +26,11 @@ class Nozomi
     $this->app = $slimApp;
     if (isset($pluginHandler)) {
       $this->registerRoutes($pluginHandler);
-    }
-    else $this->registerRoutes();
+    } else $this->registerRoutes();
   }
 
-  private function settings($container) {
+  private function settings($container)
+  {
     // DIC
 
     $container['logger'] = function ($c) {
@@ -68,7 +68,7 @@ class Nozomi
       return $view;
     };
 
-    $container['upload_directory'] = function($container) {
+    $container['upload_directory'] = function ($container) {
       $settings = $container->get('settings')['nozomi'];
       return __DIR__ . '/../../../../site/files';
     };
@@ -94,12 +94,12 @@ class Nozomi
     $settings = $container->get('settings');
     $settings->replace([
       'nozomi' => [
-            'pages_path' => __DIR__ . '/templates',
-            'site_path' => __DIR__ . '/../../../../site',
-            'cache_path' => false,
-            'data_path' => __DIR__ . '../nozomi/data',
-            'site_files_paths' => __DIR__ . '/../../../../site/files'
-        ],
+        'pages_path' => __DIR__ . '/templates',
+        'site_path' => __DIR__ . '/../../../../site',
+        'cache_path' => false,
+        'data_path' => __DIR__ . '../nozomi/data',
+        'site_files_paths' => __DIR__ . '/../../../../site/files'
+      ],
       'logger' => [
         'name' => 'nozomi_site',
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
@@ -114,7 +114,7 @@ class Nozomi
 
     $nozomi = $this;
 
-    $this->app->group('/nozomi', function() use ($nozomi) {
+    $this->app->group('/nozomi', function () use ($nozomi) {
 
       // TODO: NAME ROUTES AND USE PATH_FOR INSTEAD OF SENDING NOZOMIURL
 
@@ -143,7 +143,7 @@ class Nozomi
       $this->get('/login', function (Request $request, Response $response, array $args) {
         $conf = new Configuration();
         $config = $conf->GetConfig();
-        $array = Array (
+        $array = Array(
           "nozomiurl" => $config['nozomiurl']
         );
         $this->nozomiRenderer->render($response, 'login.html', $array);
@@ -168,14 +168,14 @@ class Nozomi
 
           return $response->withRedirect($config['nozomiurl']);
         } else {
-          return $response->withRedirect($config['nozomiurl'].'/login');
+          return $response->withRedirect($config['nozomiurl'] . '/login');
         }
       });
 
       $this->get('[/]', function (Request $request, Response $response, array $args) use ($nozomi) {
         $content = new Content();
-        $data = Array (
-          'pages' => $content->GetPages(),
+        $data = Array(
+          'pages' => sizeof($content->GetPages()),
           'sidebars' => $nozomi->sidebars
         );
         $this->nozomiRenderer->render($response, 'home.html', $data);
@@ -214,6 +214,7 @@ class Nozomi
         $content = new Content();
         $data = $content->GetPage($args['name']);
         $antiXss = new AntiXSS();
+        $antiXss = $antiXss->removeEvilAttributes(['style']);
         $data['content'] = $antiXss->xss_clean($data['content']);
         return $response->withJSON($data);
       })->add(new AuthorizationMiddleware(4))->setName('nozomigetcontent');
@@ -241,7 +242,7 @@ class Nozomi
       })->add(new AuthorizationMiddleware(4))->setName('editpage');
 
       $this->get('/user/new', function (Request $request, Response $response, array $args) use ($nozomi) {
-        $data = Array (
+        $data = Array(
           'sidebars' => $nozomi->sidebars
         );
         return $this->nozomiRenderer->render($response, 'user.html', $data);
@@ -257,12 +258,30 @@ class Nozomi
       })->add(new AuthorizationMiddleware(2));
 
       $this->get('/file/new', function (Request $request, Response $response, array $args) use ($nozomi) {
-        $data = Array (
+        $data = Array(
           'sidebars' => $nozomi->sidebars
         );
 
         return $this->nozomiRenderer->render($response, 'file.html', $data);
       })->add(new AuthorizationMiddleware(3));
+
+      $this->get('/settings', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $data = Array(
+          'sidebars' => $nozomi->sidebars
+        );
+
+        return $this->nozomiRenderer->render($response, 'settings.html', $data);
+      })->add(new AuthorizationMiddleware(2));
+
+      $this->get('/page/view', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $content = new Content();
+        $data = Array(
+          'pages' => $content->GetPages(),
+          'sidebars' => $nozomi->sidebars
+        );
+
+        return $this->nozomiRenderer->render($response, 'pages.html', $data);
+      })->add(new AuthorizationMiddleware(4));
 
       $this->post('/file/post', function (Request $request, Response $response, array $args) {
         $directory = $this->get('upload_directory');
@@ -301,10 +320,11 @@ class Nozomi
     });
 
     $this->app->get('/nozomi/assets/{name:.*}', function (Request $request, Response $response, array $args) {
-        $path = $args['name'];
-        $containingFolder = __DIR__ . '/';
-        $filepath = $containingFolder . $path;
-        $file = @file_get_contents($filepath);
+      $path = $args['name'];
+      $containingFolder = __DIR__ . '/';
+      $filepath = $containingFolder . $path;
+      $file = @file_get_contents($filepath);
+      if ($file) {
         $finfo = new \Finfo(FILEINFO_MIME_TYPE);
         $response->write($file);
         $explosion = explode('.', $filepath);
@@ -312,6 +332,10 @@ class Nozomi
         if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
         //if ($ext === 'svg') return $response;
         else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      } else {
+        $content = new Content();
+        return $content->RenderPage($response, $this, '404');
+      }
     });
 
     $this->app->get('/site/assets/{name:.*}', function (Request $request, Response $response, array $args) {
@@ -321,13 +345,18 @@ class Nozomi
       $containingFolder = __DIR__ . '/../../../../site/themes/' . $config['theme'] . '/';
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
-      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
-      $response->write($file);
-      $explosion = explode('.', $filepath);
-      $ext = array_pop($explosion);
-      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
-      //if ($ext === 'svg') return $response;
-      else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      if ($file) {
+        $finfo = new \Finfo(FILEINFO_MIME_TYPE);
+        $response->write($file);
+        $explosion = explode('.', $filepath);
+        $ext = array_pop($explosion);
+        if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
+        //if ($ext === 'svg') return $response;
+        else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      } else {
+        $content = new Content();
+        return $content->RenderPage($response, $this, '404');
+      }
     });
 
     $this->app->get('/site/files/{name:.*}', function (Request $request, Response $response, array $args) {
@@ -337,12 +366,17 @@ class Nozomi
       $containingFolder = __DIR__ . '/../../../../site/files/';
       $filepath = $containingFolder . $path;
       $file = @file_get_contents($filepath);
-      $finfo = new \Finfo(FILEINFO_MIME_TYPE);
-      $response->write($file);
-      $explosion = explode('.', $filepath);
-      $ext = array_pop($explosion);
-      if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
-      else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      if ($file) {
+        $finfo = new \Finfo(FILEINFO_MIME_TYPE);
+        $response->write($file);
+        $explosion = explode('.', $filepath);
+        $ext = array_pop($explosion);
+        if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
+        else return $response->withHeader('Content-Type', $finfo->buffer($file));
+      } else {
+        $content = new Content();
+        return $content->RenderPage($response, $this, '404');
+      }
     });
 
     if (isset($pluginHandler)) {

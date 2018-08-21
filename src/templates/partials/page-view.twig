@@ -1,0 +1,29 @@
+{% if pages %}
+    <h1>Pages</h1>
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">URL</th>
+                <th scope="col">Options</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for page in pages %}
+                <tr>
+                    <th scope="row">{{ page.title }}</th>
+                    <td>{{ page.name }}</td>
+                    <td>
+                        <a href="{{ path_for('editpage', {'name': page.name}) }}">Edit page</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="row">
+        <p>No pages were found on this site.</p>
+    </div>
+{% endif %}

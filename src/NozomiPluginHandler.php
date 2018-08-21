@@ -17,7 +17,11 @@ class NozomiPluginHandler
 
   public function registerPlugin(NozomiPlugin $plugin) {
     $sidebar = $plugin->sidebarHTML;
-    array_push($this->sidebars, $sidebar);
+
+    if (is_string($sidebar)) {
+      array_push($this->sidebars, $sidebar);
+    }
+
     array_push($this->plugins, $plugin);
   }
 

@@ -1,61 +1,74 @@
 <html>
 
 <head>
-    {% include 'header.html' %}
+    {% include 'partials/header.twig' %}
 </head>
 
 <body>
-    <div class="page">
-        {% include 'nav.html' %}
-        <div class="container-fluid">
-            <div class="row">
-                {% include 'sidebar.html' %}
-                <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
-                    <div class="container">
-                <h1>Dashboard</h1>
-                <div class="row nozomi-gutter">
-                <div class="col-md-3 offset-md-9">
-                    <div class="btn-toolbar text-light" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <a href="/nozomi/page/new" class="btn btn-primary">+ Page</a>
-                            <a href="/nozomi/user/new" class="btn btn-primary">+ User</a>
-                            <a href="/nozomi/filenew" class="btn btn-primary">+ File</a>
+<div class="page">
+    {% include 'nav.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            {% include 'partials/sidebar.twig' %}
+            <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+                <div class="container">
+                    <div class="row nozomi-gutter">
+                        <div class="col-md-3 offset-md-9">
+                            <div class="btn-toolbar text-light" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <a href="/nozomi/page/new" class="btn btn-primary">+ Page</a>
+                                    <a href="/nozomi/user/new" class="btn btn-primary">+ User</a>
+                                    <a href="/nozomi/file/new" class="btn btn-primary">+ File</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row nozomi-gutter">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body centereverything">
+                                    <h1 class="card-title">{{ pages }}</h1>
+                                    <h3 class="card-text">Pages</h3>
+                                    <a href="/nozomi/page/view" class="btn btn-primary">View Pages</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body centereverything">
+                                    <h1 class="card-title">1</h1>
+                                    <h3 class="card-text">Users</h3>
+                                    <a href="/nozomi/user/view" class="btn btn-primary">View Users</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row nozomi-gutter">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body centereverything">
+                                    <h1 class="card-title">0</h1>
+                                    <h3 class="card-text">Files</h3>
+                                    <a href="/nozomi/file/view" class="btn btn-primary">View Files</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body centereverything">
+                                    <h1 class="card-title">1</h1>
+                                    <h3 class="card-text">Themes</h3>
+                                    <a href="/nozomi/settings" class="btn btn-primary">Change Theme</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-                {% if pages %}
-                <h2>Pages</h2>
-                <div class="row">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Title</th>
-                            <th scope="col">URL</th>
-                            <th scope="col">Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for page in pages %}
-                        <tr>
-                            <th scope="row">{{ page.title }}</th>
-                            <td>{{ page.name }}</td>
-                            <td>
-                                <a href="{{ path_for('editpage', {'name': page.name}) }}">Edit page</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No pages were found on this site.</p>
-                {% endif %}
-            </div></div>
             </main>
-            </div>
         </div>
     </div>
-    {% include 'footer.html' %}
+</div>
+{% include 'partials/footer.twig' %}
 </body>
 
 </html>

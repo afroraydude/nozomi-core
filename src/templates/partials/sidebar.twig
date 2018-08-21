@@ -1,0 +1,26 @@
+<nav class="col-sm-3 col-md-2 d-none d-md-block bg-faded sidebar">
+    <ul id="main-sidebar" class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi' ? 'active' }}" href="/nozomi">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi/file/view' ? 'active' }}" href="/nozomi/file/view">File Manager</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi/page/view' ? 'active' }}" href="/nozomi/page/view">Page Manager</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi/user/view' ? 'active' }}" href="/nozomi/user/view">User Manager</a>
+        </li>
+    </ul>
+
+    {% for sidebar in sidebars %}
+    {{ sidebar | raw }}
+    {% endfor %}
+
+    <ul id="settings-sidebar" class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link {{ base_url() == '/nozomi/settings' ? 'active' }}" href="/nozomi/settings">Settings</a>
+        </li>
+    </ul>
+</nav>
