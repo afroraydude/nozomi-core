@@ -1,7 +1,7 @@
 <?php
 namespace Nozomi\Core;
 
-use \Slim\Database\Database;
+use \Slim\PDO\Database;
 
 class Configuration {
 
