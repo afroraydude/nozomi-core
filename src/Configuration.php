@@ -76,7 +76,7 @@ class Configuration {
         'sqluser' => $u,
         'sqlpass' => $p,
         'theme' => 'default',
-        'nozomiuri' => '/nozomi',
+        'nozomiurl' => '/nozomi',
         'key' => $bf->random_str(50)
       );
 
