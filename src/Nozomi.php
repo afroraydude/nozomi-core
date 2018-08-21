@@ -215,6 +215,7 @@ class Nozomi
         $data = $content->GetPage($args['name']);
         $antiXss = new AntiXSS();
         $antiXss = $antiXss->removeEvilAttributes(['style']);
+        $antiXss = $antiXss->removeEvilAttributes(['src']);
         $data['content'] = $antiXss->xss_clean($data['content']);
         return $response->withJSON($data);
       })->add(new AuthorizationMiddleware(4))->setName('nozomigetcontent');
