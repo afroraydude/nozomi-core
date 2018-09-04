@@ -2,6 +2,7 @@
     "name": "afroraydude/nozomi-core",
     "description": "The core library for Nozomi",
     "type": "library",
+    "version": "0.0.1",
     "require": {
         "php": ">=7.1.0",
         "slim/slim": "^3.1",
