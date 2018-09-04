@@ -1,5 +1,5 @@
 # nozomi-core
-[![version](https://img.shields.io/badge/dynamic/json.svg?label=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fafroraydude%2Fnozomi-core%2Fmaster%2Fcomposer.json&query=%24.version&colorB=orange&prefix=v&suffix=-alpha&longCache=true&style=flat-square)](https://github.com/afroraydude/nozomi-core) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fafroraydude%2Fnozomi-core?ref=badge_shield&longCache=true&style=flat-square)
+[![version](https://img.shields.io/badge/dynamic/json.svg?label=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fafroraydude%2Fnozomi-core%2Fmaster%2Fcomposer.json&query=%24.version&colorB=orange&prefix=v&suffix=-alpha&longCache=true&style=flat-square)](https://github.com/afroraydude/nozomi-core)
 
 
 
