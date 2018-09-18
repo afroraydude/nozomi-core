@@ -353,6 +353,7 @@ class Nozomi
         $ext = array_pop($explosion);
         if ($ext === 'svg') return $response->withHeader('Content-Type', 'image/svg+xml');
         //if ($ext === 'svg') return $response;
+        else if ($ext === 'php') return;
         else return $response->withHeader('Content-Type', $finfo->buffer($file));
       } else {
         $content = new Content();
