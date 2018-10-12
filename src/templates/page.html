@@ -93,7 +93,7 @@
             }
 
             $.ajax(settings).done(function (response) {
-                window.location.reload();
+                window.location.href = window.location.origin + '/nozomi/page/edit/'+$('#url').val();
             });
         });
     });
