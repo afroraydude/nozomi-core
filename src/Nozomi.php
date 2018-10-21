@@ -250,14 +250,6 @@ class Nozomi
 
       })->add(new AuthorizationMiddleware(2));
 
-      $this->post('/user/post', function (Request $request, Response $response, array $args) {
-        $content = new Content();
-        $data = $request->getParsedBody();
-        $content->PostPage($data);
-        $config = $conf->GetConfig();
-        return $response->withRedirect($config['nozomiurl']);
-      })->add(new AuthorizationMiddleware(2));
-
       $this->get('/file/new', function (Request $request, Response $response, array $args) use ($nozomi) {
         $data = Array(
           'sidebars' => $nozomi->sidebars
@@ -267,8 +259,11 @@ class Nozomi
       })->add(new AuthorizationMiddleware(3));
 
       $this->get('/settings', function (Request $request, Response $response, array $args) use ($nozomi) {
+        $config = new Configuration();
+        $config = $config->GetConfig();
         $data = Array(
-          'sidebars' => $nozomi->sidebars
+          'sidebars' => $nozomi->sidebars,
+          'config' => $config
         );
 
         return $this->nozomiRenderer->render($response, 'settings.html', $data);
