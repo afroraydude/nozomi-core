@@ -9,6 +9,8 @@ It is built on top the original Slim Framework.
 
 ## Installation
 
+***PHP 7.2 is required for this package***
+
 ### Via Composer
 Include `nozomi-core` repository into Composer:
 
