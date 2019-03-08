@@ -7,13 +7,15 @@ class Configuration {
 
   function GetConfig() {
     $configLocation = __DIR__ . '/../../../../site/config.ini';
-    $config = parse_ini_file($configLocation, true);
-    return $config;
+    if (file_exists($configLocation)) {
+    	$config = parse_ini_file($configLocation, true);
+    	return $config;
+    }
   }
 
   function ConfigExists() {
     $configLocation = __DIR__ . '/../../../../site/config.ini';
-    $config = parse_ini_file($configLocation, true);
+    $config = file_exists($configLocation);
     if ($config) return true;
     else return false;
   }
