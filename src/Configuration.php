@@ -7,13 +7,15 @@ class Configuration {
 
   function GetConfig() {
     $configLocation = __DIR__ . '/../../../../site/config.ini';
-    $config = parse_ini_file($configLocation, true);
-    return $config;
+    if (file_exists($configLocation)) {
+    	$config = parse_ini_file($configLocation, true);
+    	return $config;
+    }
   }
 
   function ConfigExists() {
     $configLocation = __DIR__ . '/../../../../site/config.ini';
-    $config = parse_ini_file($configLocation, true);
+    $config = file_exists($configLocation);
     if ($config) return true;
     else return false;
   }
@@ -45,9 +47,9 @@ class Configuration {
 
     $admin = "INSERT INTO `users` (`username`, `password`, `role`) VALUES (?, ?, 1);";
 
-    $pages = "CREATE TABLE `pages`( `id` INT(10) NOT NULL AUTO_INCREMENT, `name` VARCHAR(260) NOT NULL, `title` VARCHAR(32) NOT NULL, `author` VARCHAR(50) NOT NULL, `content` TEXT NOT NULL, `template` VARCHAR(50) NOT NULL DEFAULT 'default.html', `last-modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE INDEX `name` (`name`)) COLLATE='utf8_general_ci' ENGINE=InnoDB;";
+    $pages = "CREATE TABLE `pages`( `id` INT(10) NOT NULL AUTO_INCREMENT, `name` VARCHAR(128) NOT NULL, `title` VARCHAR(32) NOT NULL, `author` VARCHAR(50) NOT NULL, `content` TEXT NOT NULL, `template` VARCHAR(50) NOT NULL DEFAULT 'default.html', `last-modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`), UNIQUE INDEX `name` (`name`)) COLLATE='utf8_general_ci' ENGINE=InnoDB;";
 
-    $files = "CREATE TABLE `files`( `id` INT(10) NOT NULL, `filename` VARCHAR(64) NOT NULL, `location` VARCHAR(260) NOT NULL, `upload-timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`)) COLLATE='utf8_general_ci' ENGINE=InnoDB;";
+    $files = "CREATE TABLE `files`( `id` INT(10) NOT NULL, `filename` VARCHAR(64) NOT NULL, `location` VARCHAR(128) NOT NULL, `upload-timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`)) COLLATE='utf8_general_ci' ENGINE=InnoDB;";
 
     $index = "INSERT INTO `pages` (`name`, `title`, `author`, `content`) VALUES ('index', 'Home', 'nozomi', '<h1>Welcome to Nozomi!</h1>');";
 

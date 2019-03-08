@@ -1,5 +1,5 @@
 # nozomi-core
-[![version](https://img.shields.io/badge/dynamic/json.svg?label=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fafroraydude%2Fnozomi-core%2Fmaster%2Fcomposer.json&query=%24.version&colorB=orange&prefix=v&suffix=-alpha&longCache=true&style=flat-square)](https://github.com/afroraydude/nozomi-core)
+[![version](https://img.shields.io/badge/dynamic/json.svg?label=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fafroraydude%2Fnozomi-core%2Fmaster%2Fcomposer.json&query=%24.version&colorB=orange&prefix=v&suffix=-alpha&longCache=true&style=flat-square)](https://github.com/afroraydude/nozomi-core) [![GitHub license](https://img.shields.io/github/license/JetpackDevStudios/nozomi-core.svg?style=flat-square)](https://github.com/JetpackDevStudios/nozomi-core/blob/master/LICENSE)
 
 
 
